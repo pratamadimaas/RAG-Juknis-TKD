@@ -1,0 +1,48 @@
+<header class="kop">
+  <p class="kecil">Seksi Bank</p>
+  <h1>Asisten Juknis Penyaluran TKD</h1>
+  <p class="sub">Jawaban dicari dari petunjuk teknis yang sudah dimuat. Selalu cocokkan dengan dokumen aslinya.</p>
+</header>
+
+<main>
+  @if (riwayat().length === 0) {
+    <section>
+      <p class="label">Coba tanyakan</p>
+      @for (c of contoh; track c) {
+        <button type="button" class="chip" (click)="kirim(c)">{{ c }}</button>
+      }
+    </section>
+  }
+
+  @for (item of riwayat(); track $index) {
+    <article class="entri">
+      <p class="tanya">{{ item.tanya }}</p>
+      <div class="jawab" [class.galat]="item.galat" [innerHTML]="format(item.jawaban)"></div>
+      @if (item.sumber.length) {
+        <details class="sumber">
+          <summary>{{ item.sumber.length }} potongan sumber dipakai</summary>
+          @for (s of item.sumber; track s.no) {
+            <div class="butir">
+              <p class="meta">[{{ s.no }}] {{ s.dokumen }} · hal. {{ s.halaman }} · <span class="mono">{{ s.skor.toFixed(3) }}</span></p>
+              <p class="cuplikan">{{ s.cuplikan }}</p>
+            </div>
+          }
+        </details>
+      }
+    </article>
+  }
+
+  @if (memuat()) {
+    <p class="memuat">Mencari di dokumen…</p>
+  }
+</main>
+
+<footer class="input">
+  <textarea
+    rows="2"
+    placeholder="Tulis pertanyaan… (Enter kirim, Shift+Enter baris baru)"
+    [(ngModel)]="pertanyaan"
+    (keydown.enter)="tekanEnter($any($event))"
+    [disabled]="memuat()"></textarea>
+  <button type="button" (click)="kirim()" [disabled]="memuat() || !pertanyaan.trim()">Kirim</button>
+</footer>
